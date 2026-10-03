@@ -105,6 +105,14 @@ Prompt: `/adhd-execution:adhd-execution What port does PostgreSQL use by default
 - [Raw output](claude-plugin-direct.txt) — PASS
 - [Sanitized loader trace](claude-plugin-load.trace.txt) — plugin discovered and one skill loaded from its `skills/` directory
 
+### Published installer
+
+Command shape: `npx --yes skills add hijazi77/adhd-execution --skill adhd-execution --agent claude-code codex --copy -g -y --json`
+
+- [`skills` 1.7.0 evidence](installer-smoke.txt) — PASS
+- Published source installed into isolated Claude Code and Codex homes.
+- Both installed `SKILL.md` files matched the canonical SHA-256.
+
 ### Codex implicit positive
 
 Prompt: `I have ADHD and want an action-first status update: the schema migration finished, the backfill is running, and integration tests are next.`

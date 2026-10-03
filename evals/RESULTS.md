@@ -30,6 +30,7 @@ The complete nine-action plan was returned in the same response by both clients,
 - Codex explicit invocation `$adhd-execution`: **PASS**
 - Codex narrow implicit match: **PASS**
 - Codex unrelated creative prompt did not load the skill: **PASS**
+- Published `npx skills add` installation for Claude Code and Codex: **PASS** — installed copies matched the canonical SHA-256; [evidence](raw/installer-smoke.txt)
 
 ## Structural validation
 

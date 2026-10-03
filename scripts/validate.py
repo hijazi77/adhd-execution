@@ -168,6 +168,10 @@ def validate_release_evidence() -> None:
         if output not in {"5432", "5432."}:
             fail(f"unexpected Claude invocation output in {filename}: {output!r}")
 
+    installer = (raw / "installer-smoke.txt").read_text(encoding="utf-8")
+    if "PASS: published-source installation succeeded" not in installer:
+        fail("published installer evidence is missing its PASS marker")
+
 
 def main() -> None:
     validate_skill()

@@ -1,0 +1,20 @@
+Published installer smoke test — 2026-10-03
+
+CLI: skills 1.7.0
+Source: hijazi77/adhd-execution
+Command shape:
+  npx --yes skills add hijazi77/adhd-execution --skill adhd-execution --agent claude-code codex --copy -g -y --json
+Isolation:
+  HOME and XDG_CONFIG_HOME pointed to a disposable test directory.
+
+Observed result:
+- status: installed
+- selected skill: adhd-execution
+- agents: Claude Code, Codex
+- scope: global within the isolated HOME
+- mode: copy
+- canonical SHA-256: 9bac66a0e79565a7d08df65ebdde81887f361c4a5f589fdf07dea286353ac0de
+- installed Claude SHA-256: 9bac66a0e79565a7d08df65ebdde81887f361c4a5f589fdf07dea286353ac0de
+- installed Codex SHA-256: 9bac66a0e79565a7d08df65ebdde81887f361c4a5f589fdf07dea286353ac0de
+
+PASS: published-source installation succeeded and both installed copies matched the canonical skill byte-for-byte.

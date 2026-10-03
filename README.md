@@ -27,7 +27,7 @@ After this repository is published, standards-compatible installers can use:
 npx skills add hijazi77/adhd-execution --skill adhd-execution -g
 ```
 
-This installer route is documented for convenience but was not part of the 0.1.0 runtime test.
+The published-source installer route was tested with `skills` 1.7.0 in an isolated home for both Claude Code and Codex. See [`evals/raw/installer-smoke.txt`](evals/raw/installer-smoke.txt).
 
 ### Manual locations
 
