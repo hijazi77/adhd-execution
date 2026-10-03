@@ -1,0 +1,72 @@
+# OAuth 2.0 Authorization Code Flow + PKCE
+
+Use PKCE for all clients now (public and confidential) — it's the current best practice, not just a mobile/SPA workaround.
+
+## Flow sequence
+
+1. **Client generates PKCE pair**: `code_verifier` = random 43–128 char string (cryptographically random bytes, base64url-encoded, no padding). `code_challenge` = base64url(SHA256(code_verifier)).
+2. **Client generates `state`**: random string, stored in session, used for CSRF protection.
+3. **Redirect user to authorization server**:
+   ```
+   GET /authorize?
+     response_type=code
+     &client_id=...
+     &redirect_uri=https://app.example.com/callback
+     &scope=openid profile
+     &state=<random>
+     &code_challenge=<challenge>
+     &code_challenge_method=S256
+   ```
+4. **User authenticates and consents** at the authorization server.
+5. **Authorization server redirects back** to `redirect_uri` with `?code=...&state=...`.
+6. **Client verifies `state`** matches what it stored — reject if mismatched or missing.
+7. **Client exchanges code for tokens** via back-channel POST (not browser-visible):
+   ```
+   POST /token
+   grant_type=authorization_code
+   code=<code>
+   redirect_uri=https://app.example.com/callback
+   client_id=...
+   code_verifier=<original verifier>
+   ```
+8. **Authorization server verifies**: SHA256(code_verifier) == stored code_challenge, redirect_uri matches exactly, code hasn't been used before, code hasn't expired.
+9. **Server returns tokens**: `access_token`, `refresh_token` (if offline_access/scope allows), `id_token` (if OIDC).
+
+## Security-critical details
+
+| Rule | Why |
+|---|---|
+| `code_challenge_method=S256` only, never `plain` | plain defeats the purpose if the challenge leaks via logs/referrer |
+| `code_verifier` ≥ 43 chars, from CSPRNG | short/predictable verifiers are brute-forceable |
+| Validate `state` on callback | prevents CSRF / login-injection attacks |
+| Exact string match on `redirect_uri` at both steps | prevents open-redirect/code-interception |
+| Authorization code is single-use, short-lived (~60s) | limits replay window |
+| Token exchange happens server-side or in a confidential-equivalent context, never via a GET | codes/tokens must not land in browser history, logs, or referrer headers |
+| Store tokens: httpOnly+secure cookie (web) or OS keychain (native/mobile) | never localStorage — XSS can read it |
+| Validate `id_token` signature, `iss`, `aud`, `exp`, `nonce` if OIDC | prevents token forgery/replay |
+| Refresh tokens: rotate on use, detect reuse (revoke chain) | limits blast radius of a leaked refresh token |
+
+## Implementation skeleton (Node/Express-style, no new deps)
+
+```js
+const crypto = require('crypto');
+
+function base64url(buf) {
+  return buf.toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
+
+function makePkcePair() {
+  const verifier = base64url(crypto.randomBytes(32));
+  const challenge = base64url(crypto.createHash('sha256').update(verifier).digest());
+  return { verifier, challenge };
+}
+```
+`crypto.randomBytes` + SHA256 covers it → skipped: a PKCE library, add only if you need RFC edge-case helpers (verifier-length validation, multiple challenge methods) a few lines won't cover.
+
+**Done:** walkthrough + security checklist + minimal verifier/challenge generator.
+**In progress:** none.
+**Next:** wire the skeleton into your actual auth-server/client library (name the stack — e.g. Express + `openid-client`, or a specific IdP like Auth0/Cognito/Keycloak — and I'll give you the concrete calls instead of generic pseudocode).
+
+**Follow-ups:**
+- If this is a SPA with no backend, token exchange still must go server-side (BFF pattern) or you lose the "never in browser history/logs" guarantee.
+- If you need refresh-token rotation detection, that's a stateful check on the auth server, not the client — ask if you're building the IdP side too.

@@ -1,0 +1,4 @@
+{"type":"thread.started","thread_id":"01a10203-f7f6-7741-b810-7ffa38af4ffc"}
+{"type":"turn.started"}
+{"type":"item.completed","item":{"id":"item_0","type":"agent_message","text":"Cedar Cup is a warm neighborhood coffee shop where good brews and friendly faces make everyone feel at home."}}
+{"type":"turn.completed","usage":{"input_tokens":15904,"cached_input_tokens":15104,"cache_write_input_tokens":0,"output_tokens":26,"reasoning_output_tokens":0}}

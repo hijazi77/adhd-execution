@@ -1,0 +1,40 @@
+Start with a backward-compatible **dual-ID phase**: keep integer IDs authoritative until UUID reads, writes, and events are verified.
+
+### Actions 1–5 — Prepare and dual-write
+
+1. **Freeze the target contract.** Define `user_uuid` as UUIDv4 (or UUIDv7 if ordering matters), immutable, globally unique, and the new external identifier. Publish API/event schemas that accept and return both `id` and `uuid` during transition.
+
+2. **Add database columns and constraints.** Add nullable `users.uuid`, create a unique index, and add nullable `user_uuid` columns to every table that references users. Do not remove integer keys or foreign keys.
+
+3. **Backfill UUIDs deterministically and resumably.** In batches, assign each existing user one UUID, record batch progress/audit counts, then backfill each dependent table’s `user_uuid` by joining on the existing integer key.
+
+4. **Enable database consistency protection.** Add foreign keys from dependent `user_uuid` columns to `users.uuid` where supported; otherwise add validated application/trigger checks. Enforce `users.uuid NOT NULL` only after the backfill has zero gaps.
+
+5. **Deploy API dual-read/dual-write.** On user creation, generate and persist both IDs atomically. Accept integer IDs on legacy routes, add UUID routes/fields, resolve either identifier internally, and return both fields until consumers migrate.
+
+### Actions 6–9 — Stream, cut over, verify, retain rollback
+
+6. **Version event-stream messages.** Introduce a compatible event version containing `user_uuid` plus legacy `user_id`; producers dual-publish both fields from the same database transaction/outbox record. Update consumers to prefer UUID, validate it, and fall back to integer only during the transition window.
+
+7. **Verify before cutover.** Run: zero-null and uniqueness checks for `users.uuid`; referential parity checks between every `user_id`/`user_uuid` pair; API contract tests for integer and UUID requests; replay/consumer tests for both event versions; dashboards for UUID coverage, fallback usage, consumer failures, and duplicate-user creation.
+
+8. **Cut over to UUID-primary.** Change public documentation and clients to UUID endpoints/fields, make all new queries and event consumers UUID-first, reject new integer-only integrations after an announced deadline, and keep integer IDs internal/legacy-only. Monitor error rate, lookup mismatch rate, and stream lag throughout the rollout.
+
+9. **Retire integers only after the retention window.** Once fallback metrics are zero for the agreed window and event retention/replay requirements are met, remove integer fields from new API/event versions, then remove dependent integer foreign keys/columns in separately reversible migrations. Retain an ID mapping export and migration audit record.
+
+**Rollback**
+
+- Before action 9: feature-flag API resolution and event consumers back to integer-primary; continue writing both IDs; roll back only application/event schema versions, not the UUID backfill.
+- If dual-write fails: stop UUID-only traffic, repair missing UUID mappings from the audit/progress table, replay outbox events, then rerun verification.
+- After action 9: restore removed integer columns only from the retained mapping/export and replay affected events; this is why physical deletion must wait until retention and restore tests pass.
+
+**Verification gates**
+
+- Database: `COUNT(uuid IS NULL)=0`, UUID uniqueness has zero duplicates, and every populated `user_id` maps to exactly the paired `user_uuid`.
+- API: create/read/update/delete works using UUID; legacy integer paths work until retired; authorization checks use the resolved canonical user.
+- Events: producers emit matching integer/UUID pairs; consumers process UUID-only messages; replay creates no duplicate side effects.
+- Cutover: UUID request/event coverage is 100%, integer fallback is 0%, and error/latency/lag remain within existing SLOs for the agreed observation window.
+
+Done: Complete nine-action migration plan, including rollback and verification.  
+In progress: None.  
+Next: Action 1 — approve the UUID format, compatibility window, and event-retention window.

@@ -1,0 +1,5 @@
+Backfill is in progress; integration tests are queued next.
+
+Done: Schema migration finished.  
+In progress: Backfill running.  
+Next: Start integration tests once the backfill completes.

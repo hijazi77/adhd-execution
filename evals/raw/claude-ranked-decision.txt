@@ -1,0 +1,7 @@
+PostgreSQL.
+
+1. Transactions + relational joins → PostgreSQL. DynamoDB has no multi-item joins and only single-table ACID transactions (max 100 items, no cross-partition query flexibility).
+2. "Moderate scale" doesn't need DynamoDB's horizontal-scale tradeoffs — Postgres (RDS/Aurora) comfortably handles moderate scale with proper indexing.
+3. Only reach for DynamoDB if you later need massive write throughput or single-digit-ms latency at scale and can model access patterns up front, trading away ad-hoc joins.
+
+Recommendation: PostgreSQL — fits all three stated requirements directly.

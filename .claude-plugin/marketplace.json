@@ -1,0 +1,16 @@
+{
+  "$schema": "https://www.schemastore.org/claude-code-marketplace.json",
+  "name": "adhd-execution",
+  "description": "Portable ADHD-friendly response shaping for Claude Code.",
+  "owner": {
+    "name": "Muhammed Hijazi"
+  },
+  "plugins": [
+    {
+      "name": "adhd-execution",
+      "description": "Action-first replies, bounded steps, and visible progress.",
+      "source": "./",
+      "category": "productivity"
+    }
+  ]
+}

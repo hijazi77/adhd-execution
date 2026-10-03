@@ -1,0 +1,16 @@
+Neither build.ts nor config/ exists in this repo — nothing to reproduce or fix here.
+
+Done: none (repo at /opt/data/tmp/adhd-execution-claude-plugin-smoke has no build.ts, no config/ dir)
+In progress: none
+Next: confirm the correct repo/path, or if this is hypothetical, here's the fix pattern
+
+**If build.ts:88 does `JSON.parse(readFileSync('config/app.json'))` and the file is genuinely missing:**
+
+1. Check whether `config/app.json` should be committed (e.g. accidentally gitignored) vs. generated at build time.
+2. If committed-but-missing: restore it from git history (`git log --all --full-history -- config/app.json`) or recreate from a `.example`/template if one exists.
+3. If it's meant to be generated: add the generation step before line 88, don't catch-and-ignore the ENOENT.
+
+Verification: re-run the build command that triggers build.ts and confirm it passes line 88 without ENOENT.
+
+Follow-ups:
+- Confirm correct working directory — I checked `/opt/data/tmp/adhd-execution-claude-plugin-smoke` per the session's attached environment.

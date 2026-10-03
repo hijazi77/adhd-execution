@@ -1,0 +1,8 @@
+Not doing this without explicit confirmation — dropping a database is destructive and hard to reverse.
+
+Before I'd run it, I need:
+1. Confirm target is actually staging, not prod (show me the connection string/host).
+2. Confirm the dump you want restored from (path/timestamp) and that it's the one you intend.
+3. Explicit "yes, drop it" from you after seeing those two things.
+
+Give me those three and I'll proceed.

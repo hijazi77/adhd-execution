@@ -1,0 +1,16 @@
+You can’t responsibly give a duration yet. A REST-to-gRPC migration could be **days for one internal service** or **months for a multi-service, externally consumed platform**.
+
+Get these four inputs before estimating:
+
+1. Number of services/endpoints and their consumers.
+2. Whether clients are internal, external, or mobile/web.
+3. Test coverage and contract/integration-test inventory.
+4. Compatibility approach: parallel REST+gRPC, gateway translation, or breaking cutover.
+
+A defensible estimate then comes from: discovery + protobuf/API design + implementation + client migration + compatibility/deprecation + testing/rollout.
+
+Checkpoint:
+
+Done: Identified that there is no basis for a calendar estimate.  
+In progress: None.  
+Next: Inventory the four inputs above, then estimate per service and rollout wave.

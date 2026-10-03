@@ -1,0 +1,11 @@
+**Failure:** `build.ts:88` throws `ENOENT` because it tries to read `config/app.json`, but that file is missing.
+
+1. Restore or create `config/app.json` with the required application configuration.
+2. Ensure the file is included in the build environment—check `.gitignore`, Docker copy steps, and deployment packaging.
+3. Re-run the build.
+
+Verification: the build completes without an `ENOENT` error at `build.ts:88`, and `config/app.json` is present at runtime.
+
+Done: Failure and root cause identified from the report.  
+In progress: None.  
+Next (you): Add or restore `config/app.json`, then run the build.

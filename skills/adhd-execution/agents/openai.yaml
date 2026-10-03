@@ -1,0 +1,7 @@
+interface:
+  display_name: "ADHD Execution"
+  short_description: "Action-first responses with visible progress"
+  default_prompt: "Use $adhd-execution to make this response easy to act on without sacrificing correctness or completeness."
+
+policy:
+  allow_implicit_invocation: true

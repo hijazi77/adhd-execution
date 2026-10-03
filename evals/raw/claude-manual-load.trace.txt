@@ -1,0 +1,15 @@
+Claude Code manual/project skill load — sanitized debug excerpt
+Date: 2026-10-03
+Client: Claude Code 2.1.286
+Mode: project skill, no --plugin-dir
+Prompt: /adhd-execution What port does PostgreSQL use by default?
+Fixture: <project>/.claude/skills/adhd-execution linked to the repository's canonical skills/adhd-execution directory.
+
+Observed debug lines:
+- Loading skills from: managed=<managed>, user=<user>, project=[<project>/.claude/skills]
+- Loaded 32 unique skills (... project: 1 ...)
+- Watching for changes in skill/command directories: <user-skills>, <project>/.claude/skills
+
+Final output: 5432
+
+This excerpt proves project-skill discovery in the isolated fixture. The exact command and final output are retained above; machine-local paths and unrelated plugin noise were removed.

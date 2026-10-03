@@ -1,0 +1,9 @@
+{
+  "name": "adhd-execution",
+  "version": "0.1.0",
+  "description": "Action-first response shaping with bounded steps, visible progress, and grounded estimates.",
+  "author": {
+    "name": "Muhammed Hijazi"
+  },
+  "license": "MIT"
+}

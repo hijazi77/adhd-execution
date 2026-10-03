@@ -1,0 +1,16 @@
+Claude Code plugin skill load — sanitized debug excerpt
+Date: 2026-10-03
+Client: Claude Code 2.1.286
+Mode: --plugin-dir <repository>
+Prompt: /adhd-execution:adhd-execution What port does PostgreSQL use by default?
+
+Observed debug lines:
+- --plugin-dir <repository> is one plugin: .claude-plugin at its top marks it
+- Loaded inline plugin from path: adhd-execution
+- Checking plugin adhd-execution: skillsPath=exists
+- Attempting to load skills from plugin adhd-execution default skillsPath: <repository>/skills
+- Loaded 1 skills from plugin adhd-execution default directory
+
+Final output: 5432
+
+This excerpt proves the plugin and its skill were discovered in the isolated fixture. Machine-local paths and unrelated plugin noise were removed.

@@ -1,0 +1,35 @@
+Migration plan, 9 actions, grouped 5+4. No code changes made — this is a planning request, no repo-specific execution yet.
+
+**Group 1: Prep (reversible, no downtime)**
+1. Add `uuid` column (nullable) to `users` table + all FK tables; backfill via one-time script mapping `int_id → uuid` into a lookup table `user_id_map(int_id, uuid)`.
+2. Add `uuid` field to event schema (new events carry both `user_id` int and `user_uuid`); update producers to populate both.
+3. Add dual-read support in API: accept either int ID or UUID on all user-lookup endpoints, resolving int via `user_id_map`.
+4. Backfill UUID into all historical event-stream records is **not** done retroactively — instead start a forward-only cutover log (append `uuid` to new events only); mark old events as "pre-migration" by absence of field.
+5. Deploy & verify Group 1 in prod with dual-write/dual-read active; monitor for mapping misses.
+
+**Group 2: Cutover**
+6. Flip API responses and internal service calls to UUID as primary identifier; int ID becomes deprecated alias (still resolvable via map for a grace window, e.g. 30 days).
+7. Update event producers to stop emitting int `user_id`; UUID-only going forward. Add consumer-side compatibility shim that reads `user_uuid` if present, else maps `user_id` via `user_id_map` (keeps old consumers working during transition).
+8. Drop dual-write path once all consumers confirm UUID-only consumption (verified via consumer-group lag/schema metrics); make `uuid` column NOT NULL + unique constraint; add it as new PK or swap PK (depending on FK fanout — prefer keeping int as surrogate internal key if FK rewrite is too costly, exposing UUID externally only).
+9. Remove int-ID acceptance from API and `user_id_map` dependency from live code paths; retain `user_id_map` table itself (don't drop) for historical lookups/audit.
+
+**Rollback**
+- Each step is reversible until step 9: toggle a feature flag to revert API/consumers to int-ID mode, since dual-write/dual-read is retained through step 8.
+- Step 6–7: flip the flag back; producers/consumers already emit both fields so no data loss.
+- Step 8 (NOT NULL/PK swap): take a schema backup before running; rollback = restore column nullability, keep `uuid` column but stop enforcing constraint.
+- Never drop `user_id_map` — it's the permanent rollback anchor.
+
+**Verification**
+- Group 1: query to confirm 100% of active users have a `user_id_map` row; API dual-read integration test hits both ID types.
+- Group 2: consumer lag charts show zero errors after producer cutover; row count parity check between int-ID-keyed and UUID-keyed queries pre/post step 8; smoke test full signup→API→event→downstream-consumer flow with a new UUID-only user.
+
+**Checkpoint**
+```
+Done: plan drafted (9 actions, 2 groups, rollback + verification defined)
+In progress: none
+Next: confirm whether PK swap (step 8) is in scope, or UUID stays surrogate-only — this materially changes FK migration cost
+```
+
+Follow-ups:
+- FK fanout size (how many tables reference `users.id`) isn't known — affects step 8 effort estimate significantly.
+- Event stream retention window matters for whether old int-only events ever need backfilling.

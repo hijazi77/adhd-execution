@@ -1,0 +1,2 @@
+# Preserve model-generated raw text exactly; Markdown hard breaks may use trailing spaces.
+evals/raw/*.txt whitespace=-trailing-space

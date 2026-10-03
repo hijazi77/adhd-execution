@@ -1,0 +1,12 @@
+No reliable estimate without basics — this isn't a number I can ground.
+
+Variables that determine the answer:
+- Service count and their current RPC fan-out
+- Test inventory (unit/integration/contract coverage to port or rewrite)
+- Whether REST and gRPC must run side-by-side (dual-stack) during rollout
+- Proto schema design effort (new contracts vs. deriving from existing REST schemas)
+- Client count (who calls these services — internal only vs. external consumers needing a compat layer)
+
+Rough industry anchors once you have those: ~1-3 days per simple CRUD service for the swap itself, but total timeline is usually dominated by client migration and dual-running, not the server code.
+
+Next: run an inventory — `grep`/`find` for route definitions and existing test files per service — then come back with counts and I'll size it.

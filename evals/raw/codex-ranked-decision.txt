@@ -1,0 +1,8 @@
+Use **PostgreSQL**.
+
+Why it fits:
+- Strong, flexible transactions.
+- Natural relational joins and constraints.
+- Moderate scale is well within PostgreSQL’s comfort zone, with straightforward replicas/partitioning later if needed.
+
+Choose DynamoDB only if you can model around fixed access patterns, rarely need joins, and prioritize near-limitless horizontal scaling with more application-side complexity.

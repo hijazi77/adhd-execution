@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">ADHD Execution icon</title>
+  <desc id="desc">Three completed checklist items and a forward arrow on a burgundy square.</desc>
+  <rect width="512" height="512" rx="96" fill="#7A1F3D"/>
+  <g fill="none" stroke="#FFFFFF" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M104 142l25 25 45-51" stroke-width="24"/>
+    <path d="M104 246l25 25 45-51" stroke-width="24"/>
+    <path d="M104 350l25 25 45-51" stroke-width="24"/>
+    <path d="M218 146h126" stroke-width="26"/>
+    <path d="M218 250h126" stroke-width="26"/>
+    <path d="M218 354h116" stroke-width="26"/>
+    <path d="M342 318l52 36-52 36" stroke-width="22"/>
+  </g>
+</svg>
